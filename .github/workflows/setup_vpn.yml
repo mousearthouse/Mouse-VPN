@@ -1,7 +1,7 @@
 name: Setup VPN with Ansible
 
 on:
-  pull_request:
+  push:
     branches:
       - main
       - dev
