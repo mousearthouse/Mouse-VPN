@@ -13,11 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # - name: Set up SSH
-      #   run: |
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-      #     chmod 600 private_key.pem
           
       - name: Install Ansible
         run: |
@@ -26,6 +21,8 @@ jobs:
       - name: Run Ansible Playbook
         env:
           ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
+          ANSIBLE_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
+          ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
-          ansible-playbook -i inventory/hosts.ini playbooks/setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          ansible-playbook -i inventory/hosts.ini playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
