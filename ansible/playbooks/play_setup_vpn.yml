@@ -5,12 +5,6 @@
   vars_files: 
     - "{{ lookup('env', 'CI_PROJECT_DIR') }}/ansible/inventories/group_vars/all.yaml"
 
-  roles:
-    - role: wireguard
-      tags:
-        - installation
-      vars:
-
   tasks:
     - name: Ensure WireGuard is installed
       ansible.builtin.package:
