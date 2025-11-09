@@ -25,4 +25,4 @@ jobs:
           ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
-          ansible-playbook -i inventory/hosts.ini playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          ansible-playbook -i inventory/hosts.yml playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
