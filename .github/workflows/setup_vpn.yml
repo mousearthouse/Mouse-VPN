@@ -24,6 +24,11 @@ jobs:
           pip install ansible-core
           ansible-galaxy collection install ansible.posix
 
+      - name: Check Ansible environment
+        run: |
+          ansible --version
+          ansible-galaxy collection list
+
       - name: Create SSH private key file
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
