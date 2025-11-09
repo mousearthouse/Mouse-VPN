@@ -44,12 +44,9 @@
       changed_when: false
 
     - name: Enable IP forwarding
-      ansible.posix.sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        sysctl_set: true
-        state: present
-        reload: true
+      ansible.builtin.shell: |
+        echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+        sysctl -p
 
     - name: Render WireGuard config
       ansible.builtin.template:
