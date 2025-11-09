@@ -16,7 +16,6 @@
         state: present
         update_cache: true
 
-
     - name: Ensure directory exists
       ansible.builtin.file:
         path: /etc/wireguard
