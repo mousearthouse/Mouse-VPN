@@ -9,26 +9,31 @@ on:
 jobs:
   deploy:
     name: Deploy Ansible Playbook
-    # runs-on: self-hosted
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
           
-      - name: Install Ansible
+      - name: Install Python and Ansible
         run: |
-          sudo apt install -y ansible
+          sudo apt update
+          sudo apt install -y python3-pip
 
       - name: Install Ansible
         run: |
-          pip install ansible-core
-          ansible-galaxy collection install ansible.posix --upgrade
+          pip3 install ansible
+
+      - name: Install collections and roles
+        run: |
+          ansible-galaxy collection install -r ansible/requirements.yml
+          ansible-galaxy role install -r ansible/roles/requirements.yml
 
       - name: Check Ansible environment
         run: |
-          ansible-config dump | grep COLLECTIONS_PATHS
           ansible --version
           ansible-galaxy collection list
+          ansible-galaxy role list
 
       - name: Create SSH private key file
         run: |
@@ -42,6 +47,5 @@ jobs:
           ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
-          ansible-galaxy role install -r ansible/roles/requirements.yml
-          ansible-galaxy collection install -r ansible/requirements.yml
           ansible-playbook -i ansible/inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          
