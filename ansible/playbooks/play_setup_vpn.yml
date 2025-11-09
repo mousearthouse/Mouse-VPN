@@ -54,10 +54,10 @@
 
     - name: Render WireGuard config
       ansible.builtin.template:
-        src: "../templates/wg0.conf.j2"
+        src: "templates/wg0.conf.j2"
         dest: "{{ wg_config_path }}"
         mode: "0600"
-      notify: restart wireguard
+      notify: Restart wireguard
 
     - name: Enable and start WireGuard
       ansible.builtin.systemd:

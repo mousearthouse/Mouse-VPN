@@ -1,4 +1,4 @@
 ---
-ansible_connection: ssh
-ansible_password: {{ }}
-ansible_become_password: {{}}
+# ansible_connection: ssh
+# ansible_password: "{{ }}"
+# ansible_become_password: "{{ }}"
