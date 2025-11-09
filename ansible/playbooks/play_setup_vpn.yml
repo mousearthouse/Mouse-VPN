@@ -2,14 +2,17 @@
   hosts: mousehost
   become: true
 
-  collections:
-    - ansible.posix
-
   vars:
     wg_interface: wg0
     wg_port: 51820
     wg_address: '10.8.0.1/24'
     wg_config_path: '/etc/wireguard/{{ wg_interface }}.conf'
+
+  handlers:
+    - name: restart wireguard
+      ansible.builtin.systemd:
+        name: 'wg-quick@{{ wg_interface }}'
+        state: restarted
 
   tasks:
 
@@ -50,9 +53,10 @@
 
     - name: Render WireGuard config
       ansible.builtin.template:
-        src: '../templates/wg0.conf.j2'
+        src: '{{ playbook_dir }}/ansible/templates/wg0.conf.j2'
         dest: '{{ wg_config_path }}'
         mode: '0600'
+      notify: restart wireguard
 
     - name: Enable and start WireGuard
       ansible.builtin.systemd:
