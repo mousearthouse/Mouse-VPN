@@ -25,4 +25,5 @@ jobs:
           ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_PASSWORD }}
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
+          ansible-galaxy role install -r ansible/roles/requirements.yml
           ansible-playbook -i inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}

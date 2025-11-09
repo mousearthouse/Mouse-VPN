@@ -1,3 +1,0 @@
-- src: https://github.com/githubixx/ansible-role-wireguard
-  scm: git
-  version: v18.2.0
