@@ -1,5 +1,5 @@
 - name: Install wireguard
-  hosts: all
+  hosts: mousehost
   become: true
 
   vars_files: 
