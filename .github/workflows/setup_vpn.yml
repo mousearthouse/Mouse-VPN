@@ -26,6 +26,7 @@ jobs:
 
       - name: Check Ansible environment
         run: |
+          ansible-config dump | grep COLLECTIONS_PATHS
           ansible --version
           ansible-galaxy collection list
 
@@ -42,4 +43,4 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
           ansible-galaxy role install -r ansible/roles/requirements.yml
-          ansible-playbook -i ansible/inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          python3 ansible-playbook -i ansible/inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
