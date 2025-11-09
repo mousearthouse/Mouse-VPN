@@ -35,6 +35,7 @@
         mode: '0600'
       when: wg_private_key is changed
 
+
     - name: Generate public key from private key
       ansible.builtin.command: sh -c 'cat /etc/wireguard/privatekey | wg pubkey'
       register: wg_public_key
