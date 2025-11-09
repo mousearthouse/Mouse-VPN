@@ -1,10 +1,7 @@
 - name: Install wireguard
   hosts: mousehost
   become: true
-
-  vars_files: 
-    - "{{ lookup('env', 'CI_PROJECT_DIR') }}/ansible/inventories/group_vars/all.yaml"
-
+  
   tasks:
     - name: Ensure WireGuard is installed
       ansible.builtin.package:

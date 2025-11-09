@@ -19,6 +19,11 @@ jobs:
         run: |
           sudo apt install -y ansible
 
+      - name: Create SSH private key file
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
       - name: Run Ansible Playbook
         env:
           ANSIBLE_USER: ${{ secrets.ANSIBLE_USER }}
@@ -27,4 +32,4 @@ jobs:
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
           ansible-galaxy role install -r ansible/roles/requirements.yml
-          ansible-playbook -i inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
+          ansible-playbook -i ansible/inventory/hosts.yml ansible/playbooks/play_setup_vpn.yml --private-key private_key.pem -u ${{ secrets.ANSIBLE_USER }}
