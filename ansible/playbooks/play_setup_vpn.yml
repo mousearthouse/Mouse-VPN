@@ -1,9 +1,61 @@
-- name: Install wireguard
+- name: Setup WireGuard
   hosts: mousehost
   become: true
-  
+
+  vars:
+    wg_interface: wg0
+    wg_port: 51820
+    wg_address: "10.8.0.1/24"
+    wg_config_path: "/etc/wireguard/{{ wg_interface }}.conf"
+
   tasks:
-    - name: Ensure WireGuard is installed
-      ansible.builtin.package:
+
+    - name: Install WireGuard
+      ansible.builtin.apt:
         name: wireguard
         state: present
+        update_cache: true
+
+    - name: Ensure directory exists
+      ansible.builtin.file:
+        path: /etc/wireguard
+        state: directory
+        mode: "0700"
+
+    - name: Generate private key if not exists
+      ansible.builtin.command: wg genkey
+      register: wg_private_key
+      args:
+        creates: "/etc/wireguard/privatekey"
+
+    - name: Save private key
+      ansible.builtin.copy:
+        content: "{{ wg_private_key.stdout }}"
+        dest: "/etc/wireguard/privatekey"
+        mode: "0600"
+      when: wg_private_key is changed
+
+    - name: Generate public key from private key
+      ansible.builtin.command: sh -c "cat /etc/wireguard/privatekey | wg pubkey"
+      register: wg_public_key
+      changed_when: false
+
+    - name: Enable IP forwarding
+      ansible.builtin.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Render WireGuard config
+      ansible.builtin.template:
+        src: "../templates/wg0.conf.j2"
+        dest: "{{ wg_config_path }}"
+        mode: "0600"
+
+    - name: Enable and start WireGuard
+      ansible.builtin.systemd:
+        name: "wg-quick@{{ wg_interface }}"
+        enabled: true
+        state: restarted

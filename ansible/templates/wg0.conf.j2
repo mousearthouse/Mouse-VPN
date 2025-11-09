@@ -1,0 +1,15 @@
+[Interface]
+Address = {{ wg_address }}
+SaveConfig = true
+ListenPort = {{ wg_port }}
+PrivateKey = {{ wg_private_key.stdout }}
+
+PostUp = iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+{% for client in wg_clients %}
+[Peer]
+# {{ client.name }}
+PublicKey = {{ client.public_key }}
+AllowedIPs = {{ client.address }}
+{% endfor %}
