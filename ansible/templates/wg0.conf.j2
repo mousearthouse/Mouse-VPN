@@ -2,7 +2,7 @@
 Address = {{ wg_address }}
 SaveConfig = true
 ListenPort = {{ wg_port }}
-PrivateKey = {{ lookup('file', '/etc/wireguard/privatekey') | trim }}
+PrivateKey = {{ wg_private_key }}
 
 PostUp = iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 PostDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE

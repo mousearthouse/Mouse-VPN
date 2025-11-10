@@ -38,10 +38,14 @@
 
     - name: Generate private key if not exists
       ansible.builtin.command: wg genkey
-      register: wg_private_key
       args:
         creates: "/etc/wireguard/privatekey"
       notify: Save private key
+
+    - name: Read private key content
+      ansible.builtin.command: cat /etc/wireguard/privatekey
+      register: wg_private_key
+      changed_when: false
 
     - name: Flush handlers immediately
       ansible.builtin.meta: flush_handlers
