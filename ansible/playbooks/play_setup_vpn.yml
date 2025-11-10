@@ -1,0 +1,75 @@
+- name: Setup WireGuard
+  hosts: mousehost
+  become: true
+
+  vars:
+    wg_interface: wg0
+    wg_port: 51820
+    wg_address: "10.8.0.1/24"
+    wg_config_path: "/etc/wireguard/{{ wg_interface }}.conf"
+
+  vars_files:
+    - ../inventory/group_vars/clients.yml
+
+  handlers:
+    - name: Save private key
+      ansible.builtin.copy:
+        content: "{{ wg_private_key.stdout }}"
+        dest: "/etc/wireguard/privatekey"
+        mode: "0600"
+
+    - name: Restart wireguard
+      ansible.builtin.systemd:
+        name: "wg-quick@{{ wg_interface }}"
+        state: restarted
+
+  tasks:
+
+    - name: Install WireGuard
+      ansible.builtin.apt:
+        name: wireguard
+        state: present
+
+    - name: Ensure directory exists
+      ansible.builtin.file:
+        path: /etc/wireguard
+        state: directory
+        mode: "0700"
+
+    - name: Generate private key if not exists
+      ansible.builtin.command: wg genkey
+      args:
+        creates: "/etc/wireguard/privatekey"
+      notify: Save private key
+
+    - name: Read private key content
+      ansible.builtin.command: cat /etc/wireguard/privatekey
+      register: wg_private_key
+      changed_when: false
+
+    - name: Flush handlers immediately
+      ansible.builtin.meta: flush_handlers
+
+    - name: Generate public key from private key
+      ansible.builtin.command: "sh -c 'cat /etc/wireguard/privatekey | wg pubkey'"
+      register: wg_public_key
+      changed_when: false
+
+    - name: Enable IP forwarding
+      ansible.builtin.shell: |
+        echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+        sysctl -p
+      changed_when: false
+
+    - name: Render WireGuard config
+      ansible.builtin.template:
+        src: "../templates/wg0.conf.j2"
+        dest: "{{ wg_config_path }}"
+        mode: "0600"
+      notify: Restart wireguard
+
+    - name: Enable and start WireGuard
+      ansible.builtin.systemd:
+        name: "wg-quick@{{ wg_interface }}"
+        enabled: true
+        state: restarted
