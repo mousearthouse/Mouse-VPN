@@ -52,4 +52,5 @@ jobs:
             ansible/playbooks/play_setup_vpn.yml \
             --private-key private_key.pem \
             -u ${{ secrets.ANSIBLE_USER }} \
-            --extra-vars "ansible_become_pass=${{ secrets.ANSIBLE_USER_PASSWD }}"
+            --extra-vars "ansible_become_pass=${{ secrets.ANSIBLE_USER_PASSWD }}" \
+            --extra-vars "laptop_key=${{ secrets.LAPTOP_KEY }}" \
