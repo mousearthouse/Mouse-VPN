@@ -40,6 +40,9 @@
         creates: "/etc/wireguard/privatekey"
       notify: Save private key
 
+    - name: Flush handlers immediately
+      ansible.builtin.meta: flush_handlers
+
     - name: Generate public key from private key
       ansible.builtin.command: "sh -c 'cat /etc/wireguard/privatekey | wg pubkey'"
       register: wg_public_key
