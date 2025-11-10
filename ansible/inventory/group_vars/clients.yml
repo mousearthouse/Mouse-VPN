@@ -1,0 +1,5 @@
+---
+wg_clients:
+  - name: laptop
+    public_key: "${{ secrets.LAPTOP_KEY }}"
+    address: "10.8.0.2/32"
